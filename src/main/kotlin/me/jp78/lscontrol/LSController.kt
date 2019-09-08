@@ -14,8 +14,8 @@ import kotlinx.coroutines.channels.Channel
  */
 abstract class LSController
 {
-    private val commandStack = Channel<CommandSet>()
-    private val resultStack = Channel<CompletableDeferred<CommandSet.Result>>()
+    val commandStack = Channel<CommandSet>()
+    val resultStack = Channel<CompletableDeferred<CommandSet.Result>>()
     /**
      * Run the controller. Please note this is a suspension method, and we will use the awesome power of coroutines.
      */
@@ -29,11 +29,14 @@ abstract class LSController
         return deferred;
     }
 
-    fun Route.control(path: String)
-    {
-        post(path) {
-            resultStack.receive().complete(CommandSet.Result(call.parameters["url"]!!,call.parameters["html"]!!))
-            call.respondText(commandStack.receive().serialize())
-        }
+
+}
+
+fun Route.control(controller: LSController, path: String)
+{
+    post(path) {
+        controller.resultStack.receive()
+            .complete(CommandSet.Result(call.parameters["url"]!!, call.parameters["html"]!!))
+        call.respondText(controller.commandStack.receive().serialize())
     }
 }
