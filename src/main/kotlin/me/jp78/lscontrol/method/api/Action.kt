@@ -5,10 +5,10 @@ import java.util.stream.Stream
 
 /**
  * Action class for linkensphere control.
- * @property methodName The exact linkensphere methodname
+ * @property method The exact linkensphere methodname
  * @property params The exact method parameters
  */
-class Action(val methodName : String, vararg methodParams : String?)
+class Action(val method : String, vararg methodParams : String?)
 {
     val params: MutableList<String> = Stream.of(methodParams).filter { it != null }.collect(Collectors.toList()) as MutableList<String>
 
